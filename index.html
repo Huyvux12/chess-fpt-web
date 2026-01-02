@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess GPT - Chơi Cờ Với AI</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="chess-loader">♔</div>
+            <h2>Đang tải AI...</h2>
+            <p class="loading-text">Chuẩn bị 34 triệu ván cờ kinh nghiệm</p>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="app hidden">
+        <!-- Header -->
+        <header class="header">
+            <h1><i data-lucide="crown" class="header-icon"></i> Chess GPT</h1>
+            <p class="subtitle">Thách thức AI được huấn luyện từ 34 triệu ván cờ</p>
+        </header>
+
+        <!-- Game Setup -->
+        <div id="setup-panel" class="setup-panel">
+            <div class="setup-card">
+                <h2><i data-lucide="gamepad-2" class="icon-inline"></i> Thiết lập ván đấu</h2>
+
+                <div class="option-group">
+                    <label>Chọn bên:</label>
+                    <div class="color-selector">
+                        <button id="btn-white" class="color-btn active" data-color="white">
+                            <span class="piece">♔</span>
+                            <span>Trắng</span>
+                        </button>
+                        <button id="btn-black" class="color-btn" data-color="black">
+                            <span class="piece">♚</span>
+                            <span>Đen</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="option-group">
+                    <label>Độ khó:</label>
+                    <div class="difficulty-selector">
+                        <button class="diff-btn" data-diff="easy">
+                            <i data-lucide="smile" class="diff-icon"></i>
+                            <span class="name">Dễ</span>
+                            <span class="desc">Nhiều sai lầm</span>
+                        </button>
+                        <button class="diff-btn active" data-diff="normal">
+                            <i data-lucide="brain" class="diff-icon"></i>
+                            <span class="name">Thường</span>
+                            <span class="desc">Cân bằng</span>
+                        </button>
+                        <button class="diff-btn" data-diff="hard">
+                            <i data-lucide="flame" class="diff-icon"></i>
+                            <span class="name">Khó</span>
+                            <span class="desc">Tính toán kỹ</span>
+                        </button>
+                    </div>
+                </div>
+
+                <button id="btn-start" class="start-btn">
+                    <i data-lucide="swords" class="btn-icon"></i> Bắt đầu ván đấu
+                </button>
+            </div>
+        </div>
+
+        <!-- Game Board -->
+        <div id="game-panel" class="game-panel hidden">
+            <div class="game-layout">
+                <!-- Left: Info -->
+                <div class="game-info">
+                    <div class="player-card ai">
+                        <div class="avatar"><i data-lucide="bot" class="avatar-icon"></i></div>
+                        <div class="info">
+                            <span class="name">Chess GPT</span>
+                            <span id="ai-color" class="color">Đen</span>
+                        </div>
+                        <div id="ai-thinking" class="thinking hidden">
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                        </div>
+                    </div>
+
+                    <div class="vs-badge">VS</div>
+
+                    <div class="player-card human">
+                        <div class="avatar"><i data-lucide="user" class="avatar-icon"></i></div>
+                        <div class="info">
+                            <span class="name">Bạn</span>
+                            <span id="human-color" class="color">Trắng</span>
+                        </div>
+                    </div>
+
+                    <div class="difficulty-badge">
+                        <i data-lucide="gauge" class="badge-icon"></i>
+                        <span id="current-diff">Thường</span>
+                    </div>
+                </div>
+
+                <!-- Center: Board -->
+                <div class="board-container">
+                    <div id="chessboard" class="chessboard"></div>
+                    <div id="turn-indicator" class="turn-indicator">Lượt của bạn</div>
+                </div>
+
+                <!-- Right: Move History -->
+                <div class="history-panel">
+                    <h3><i data-lucide="scroll-text" class="icon-inline"></i> Lịch sử nước đi</h3>
+                    <div id="move-history" class="move-list"></div>
+                    <div class="game-controls">
+                        <button id="btn-undo" class="ctrl-btn" disabled>
+                            <i data-lucide="undo-2"></i> Đi lại
+                        </button>
+                        <button id="btn-reset" class="ctrl-btn">
+                            <i data-lucide="refresh-cw"></i> Ván mới
+                        </button>
+                        <button id="btn-settings" class="ctrl-btn">
+                            <i data-lucide="settings"></i> Cài đặt
+                        </button>
+                        <button id="btn-quit" class="ctrl-btn secondary">
+                            <i data-lucide="log-out"></i> Thoát
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="modal hidden">
+            <div class="modal-content settings-content">
+                <h2><i data-lucide="settings" class="icon-inline"></i> Cài đặt</h2>
+
+                <div class="setting-group">
+                    <label><i data-lucide="moon" class="label-icon"></i> Giao diện:</label>
+                    <div class="theme-toggle">
+                        <button class="theme-btn active" data-theme="dark">
+                            <i data-lucide="moon"></i> Tối
+                        </button>
+                        <button class="theme-btn" data-theme="light">
+                            <i data-lucide="sun"></i> Sáng
+                        </button>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <label><i data-lucide="palette" class="label-icon"></i> Màu bàn cờ:</label>
+                    <div class="board-themes">
+                        <button class="board-theme-btn active" data-board="classic" title="Classic">
+                            <span class="preview classic"></span>
+                        </button>
+                        <button class="board-theme-btn" data-board="wood" title="Gỗ">
+                            <span class="preview wood"></span>
+                        </button>
+                        <button class="board-theme-btn" data-board="blue" title="Xanh">
+                            <span class="preview blue"></span>
+                        </button>
+                        <button class="board-theme-btn" data-board="green" title="Xanh lá">
+                            <span class="preview green"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <label><i data-lucide="layout-grid" class="label-icon"></i> Kiểu quân cờ:</label>
+                    <div class="piece-sets">
+                        <button class="piece-set-btn active" data-pieces="unicode">Unicode</button>
+                        <button class="piece-set-btn" data-pieces="classic">Classic</button>
+                        <button class="piece-set-btn" data-pieces="modern">Modern</button>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <label><i data-lucide="volume-2" class="label-icon"></i> Âm thanh:</label>
+                    <div class="sound-toggle">
+                        <button id="btn-sound" class="sound-btn active">
+                            <i data-lucide="volume-2"></i> Bật
+                        </button>
+                    </div>
+                </div>
+
+                <button id="btn-close-settings" class="modal-btn primary">
+                    <i data-lucide="check"></i> Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Modal -->
+    <div id="result-modal" class="modal hidden">
+        <div class="modal-content">
+            <div id="result-icon" class="result-icon">🏆</div>
+            <h2 id="result-title">Chúc mừng!</h2>
+            <p id="result-message">Bạn đã thắng!</p>
+            <div class="modal-buttons">
+                <button id="btn-play-again" class="modal-btn primary">
+                    <i data-lucide="refresh-cw"></i> Chơi lại
+                </button>
+                <button id="btn-change-settings" class="modal-btn">
+                    <i data-lucide="settings"></i> Đổi thiết lập
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confetti Canvas -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.17.0/dist/ort.min.js"></script>
+    <script type="module" src="js/app.js"></script>
+    <script>
+        // Initialize Lucide icons
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+    </script>
+</body>
+
+</html>
