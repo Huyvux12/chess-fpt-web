@@ -1,4 +1,4 @@
-# Chess GPT Web
+# Chess FPT Web
 
 Website chơi cờ vua với AI được huấn luyện từ 34 triệu ván cờ.
 
@@ -14,7 +14,7 @@ Website chơi cờ vua với AI được huấn luyện từ 34 triệu ván c�
 ## Cách sử dụng
 
 ### Chơi online
-Truy cập: https://YOUR_USERNAME.github.io/chess-fpt-web
+Truy cập: https://Huyvux12.github.io/chess-fpt-web
 
 ### Chạy local
 ```bash
@@ -60,3 +60,4 @@ web/
 ## License
 
 MIT License
+
