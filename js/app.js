@@ -95,6 +95,24 @@ const PIECE_SYMBOLS = {
     'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
 };
 
+const PIECE_SET_SYMBOLS = {
+    unicode: PIECE_SYMBOLS,
+    classic: {
+        'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
+        'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
+    },
+    modern: {
+        'K': '👑', 'Q': '🪄', 'R': '🏰', 'B': '✨', 'N': '🐴', 'P': '⚪',
+        'k': '♛', 'q': '💠', 'r': '🗼', 'b': '🔹', 'n': '♞', 'p': '⚫'
+    }
+};
+
+function getPieceSymbol(piece) {
+    const pieceKey = piece.color === 'w' ? piece.type.toUpperCase() : piece.type;
+    const selectedSet = PIECE_SET_SYMBOLS[state.pieceSet] || PIECE_SET_SYMBOLS.unicode;
+    return selectedSet[pieceKey] || PIECE_SYMBOLS[pieceKey] || '';
+}
+
 let selectedSquare = null;
 let validMoves = [];
 
@@ -121,7 +139,7 @@ function renderBoard() {
             if (isLastMove) classes += ' last-move';
 
             const pieceHtml = piece ?
-                `<span class="piece ${piece.color === 'w' ? 'white' : 'black'}">${PIECE_SYMBOLS[piece.color === 'w' ? piece.type.toUpperCase() : piece.type]}</span>` : '';
+                `<span class="piece ${piece.color === 'w' ? 'white' : 'black'}">${getPieceSymbol(piece)}</span>` : '';
 
             html += `<div class="${classes}" data-square="${square}">${pieceHtml}</div>`;
         }
@@ -228,6 +246,10 @@ async function getAIMove() {
 
         const moveHistoryStr = state.moveHistory.join(' ');
         const aiMove = await chessAI.getMove(moveHistoryStr, state.difficulty);
+
+        if (!aiMove || aiMove.length < 4) {
+            throw new Error(`AI returned invalid move format: ${aiMove}`);
+        }
 
         if (aiMove && aiMove.length >= 4) {
             const from = aiMove.substring(0, 2);
