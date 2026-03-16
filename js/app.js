@@ -237,6 +237,10 @@ async function getAIMove() {
 
             const move = state.game.move({ from, to, promotion });
 
+            if (!move) {
+                throw new Error(`AI generated illegal move: ${aiMove}`);
+            }
+
             if (move) {
                 state.moveHistory.push(aiMove);
                 state.gameHistory.push(state.game.fen());
